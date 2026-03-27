@@ -6,18 +6,20 @@ import { useAuthStore } from '../store/useAuthStore';
 import { useState } from 'react';
 
 const Sidebar = () => {
-  const {getUsers, users, selectedUser, setSelectedUser, isUsersLoading} = useChatStore();
+  const {getConversations, conversations, selectedConv, setSelectedConv, isConvLoading} = useChatStore();
 
   const {onlineUsers} = useAuthStore();
-  const [showOnlineOnly, setShowOnlineOnly] = useState();
+  const [showOnlineOnly, setShowOnlineOnly] = useState(false);
 
   useEffect(()=>{
-    getUsers();
-  }, [getUsers])
+    getConversations();
+    // console.log("user run .. ");
+  }, [getConversations])
 
-  const filteredUsers = showOnlineOnly ? users.filter(user=> onlineUsers.includes(user._id)) : users;
+  const filteredConv = showOnlineOnly ? conversations.filter(conv=> onlineUsers.includes(conv.ouId)) : conversations;
+  // const filteredConv = conversations;
 
-  if(isUsersLoading){
+  if(isConvLoading){
     return(
      <SidebarSkeleton/>
     )      
@@ -49,42 +51,65 @@ const Sidebar = () => {
       <div className='overflow-y-auto w-full py-3'>
         {/* map all user contact */}
         
-        {filteredUsers.map((user) => (
+        {filteredConv.length ===0 
+        ? (<div className="text-center text-gray-500">No Users</div>)
+        : filteredConv.map((conv) => (
           <button
-            key={user._id}
-            onClick={()=> setSelectedUser(user)}
+            key={conv._id}
+            onClick={()=> setSelectedConv(conv)}
             className={`w-full sm:p-3 p-1 flex items-center gap-3 hover:bg-base-300 transition-colors
-              ${selectedUser?._id == user._id ? "bg-base-300 ring-1 ring-base-300 " : ""}`}
+              ${selectedConv?._id == conv._id ? "bg-base-300 ring-1 ring-base-300 " : ""}`}
           >
             <div className='relative mx-auto lg:mx-0'>
               <img 
-                src={user.profilePic || "/avtar.png"} 
-                alt={user.name}
+                src={conv.profilePic || "/avtar.png"} 
+                alt={conv.name}
                 className='size-13 object-cover rounded-full' 
               />
 
-              {onlineUsers.includes(user._id) && (
+              {onlineUsers.includes(conv.ouId) && (
                 <span 
-                  className='absolute bottom-0 right-0 size-3 bg-green-500
+                  className='absolute bottom-0 right-0 size-2 bg-success
                   rounded-full ring-1 ring-zinc-900'
                 />
               )}
             </div>
 
           {/* user info - lg screen */}
-          <div className='hidden lg:block text-left min-w-0'>
-            <div className='font-medium truncate'>{user.fullName}</div>
-            <div className='text-sm text-zinc-400'>
-              {onlineUsers.includes(user._id) ? "Online" : "Offline"}
+          <div className="hidden lg:block text-left min-w-0 flex-1">
+            
+            {/* Name + Online Status */}
+            <div className="flex items-center gap-2">
+              <span className="font-medium truncate">{conv.name}</span>
+              <span
+                className={`text-xs ${
+                  onlineUsers.includes(conv.ouId) 
+                  ? "text-success " : "text-zinc-400"
+                }`}
+              >
+                {onlineUsers.includes(conv.ouId) ? "online" : "offline"}
+              </span>
+            </div>
+
+            {/* Last Message + Unread Count */}
+            <div className="flex items-center justify-between mt-1">
+              
+              <p className="text-sm text-zinc-500 truncate max-w-[75%]">
+                {conv?.lastMessage}
+              </p>
+
+              {conv.unreadCount > 0 && (
+                <span className="ml-2 flex items-center justify-center min-w-[20px] h-[20px] px-1 text-xs font-semibold text-white bg-success rounded-full">
+                  {conv.unreadCount}
+                </span>
+              )}
+
             </div>
           </div>
 
 
           </button>
         ))}
-        {filteredUsers.length ===0 && (
-          <div className="text-center text-gray-500">No Users</div>
-        )}
 
       </div>
     </aside>

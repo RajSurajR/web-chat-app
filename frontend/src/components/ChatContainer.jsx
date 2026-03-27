@@ -5,19 +5,19 @@ import MessageInput from './MessageInput';
 import MessageSkeleton from './skeletons/MessageSkeleton'
 import { useAuthStore } from '../store/useAuthStore';
 import { formateMessageTime } from '../lib/utils';
-const ChatContainer = () => {
 
-  const {messages, getMessages, isMessagesLoading, selectedUser, subscribeToMessage, unsubscribeFromMessage} = useChatStore();
+const ChatContainer = () => {
+  const {messages, getMessages, isMessagesLoading, selectedConv, subscribeToMessage, unsubscribeFromMessage} = useChatStore();
   const {authUser} = useAuthStore();  
   const messageEndRef = useRef(null);
 
   useEffect(()=>{
-    getMessages(selectedUser._id);
-
-    subscribeToMessage();
-
-    return () => unsubscribeFromMessage();
-  }, [selectedUser._id, getMessages, subscribeToMessage, unsubscribeFromMessage])
+    if (!selectedConv?._id) return;
+    getMessages(selectedConv._id);
+    // subscribeToMessage();
+    // console.log("message run..");
+    // return () => unsubscribeFromMessage();
+  }, [selectedConv._id, getMessages, subscribeToMessage, unsubscribeFromMessage])
 
   useEffect(()=>{
     if(messageEndRef.current && messages){
@@ -52,7 +52,7 @@ const ChatContainer = () => {
                 <img 
                   src={message.senderId === authUser._id 
                     ? authUser.profilePic || "/avatar.png" 
-                    : selectedUser.profilePic || "/avatar.png"}
+                    : selectedConv.profilePic || "/avatar.png"}
                     alt='profile pic'
                  />
               </div>

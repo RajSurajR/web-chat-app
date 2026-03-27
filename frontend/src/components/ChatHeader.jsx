@@ -4,7 +4,7 @@ import { useAuthStore } from '../store/useAuthStore';
 import { X } from 'lucide-react';
 
 const ChatHeader = () => {
-    const {selectedUser, setSelectedUser} = useChatStore();
+    const {selectedConv, setSelectedConv} = useChatStore();
     const {onlineUsers } = useAuthStore();
 
   return (
@@ -13,20 +13,20 @@ const ChatHeader = () => {
            {/* Avatar */}
             <div className="avatar">
                 <div className='size-10 rounded-full relative'>
-                    <img src={selectedUser.profilePic || "/avatar.png"} alt={selectedUser.fullName} />
+                    <img src={selectedConv.profilePic || "/avatar.png"} alt={selectedConv.name} />
                 </div>
             </div>
 
             {/* User info */}
             <div>
-                <h3 className='font-medium '>{selectedUser.fullName}</h3>
-                <p className='text-xs text-base-content/70'>
-                    {onlineUsers.includes(selectedUser._id) ? "Online" : "Offline"}
+                <h3 className='font-medium '>{selectedConv.name}</h3>
+                <p className={`text-xs ${onlineUsers.includes(selectedConv.ouId)?" text-success":" text-base-content/70"}`}>
+                    {onlineUsers.includes(selectedConv.ouId) ? "online" : "offline"}
                 </p>
             </div>
         </div>
 
-        <button onClick={()=> setSelectedUser(null)}> <X/></button>
+        <button onClick={()=> setSelectedConv(null)}> <X/></button>
 
     </div>
   )

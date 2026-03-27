@@ -3,135 +3,130 @@ import { useAuthStore } from '../store/useAuthStore';
 import { Eye, EyeOff, Loader2, Lock, Mail, MailIcon, MessageSquareIcon, MessageSquareQuote, User } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import toast from 'react-hot-toast';
+import { SignUp } from '@clerk/clerk-react';
 
 const SignUpPage = () => {
-  const [showPassword, setShowPassword] = useState(false);
-  const [formData, setFormData] = useState(
-    { fullName:"", email:"", password:"",}
-  );
-
-  const {signup, isSigningUp} = useAuthStore();
-
-  const validateForm = () =>{
-      if(!formData.fullName.trim()) return toast.error("Full Name is required");
-      if(formData.fullName.trim()<5) return toast.error("Full Name have must be minimum 5 character")
-      if(!formData.email.trim()) return toast.error("Email is required");
-      if(!/\S+@\S+\.\S+/.test(formData.email)) return toast.error("Invalid email");
-      if(!formData.password) return toast.error("Password is required");
-      if(formData.password.length <6) return toast.error("Password must be at least 6 characters");
-
-      return true;
-  };
-  const handleSubmit = (e) =>{
-    e.preventDefault();
-    const valid = validateForm();
-    if(valid==true){
-      signup(formData);
-    }
-    
-  };
+  // const [showPassword, setShowPassword] = useState(false);
+  // const [formData, setFormData] = useState(
+  //   { fullName:"", email:"", password:"",}
+  // );
+  // const {signup, isSigningUp} = useAuthStore();
+  // const validateForm = () =>{
+  //     if(!formData.fullName.trim()) return toast.error("Full Name is required");
+  //     if(formData.fullName.trim()<5) return toast.error("Full Name have must be minimum 5 character")
+  //     if(!formData.email.trim()) return toast.error("Email is required");
+  //     if(!/\S+@\S+\.\S+/.test(formData.email)) return toast.error("Invalid email");
+  //     if(!formData.password) return toast.error("Password is required");
+  //     if(formData.password.length <6) return toast.error("Password must be at least 6 characters");
+  //     return true;
+  // };
+  // const handleSubmit = (e) =>{
+  //   e.preventDefault();
+  //   const valid = validateForm();
+  //   if(valid==true){
+  //     signup(formData);
+  //   }
+  // };
 
   return (
-    <div className="min-h-screen w-full flex flex-col md:flex-row bg-gray-50">
-    
-      {/* Left Side (Form) */}
-      <div className="min-h-screen w-full md:w-1/2  md:pt-0 pt-20  flex flex-col items-center justify-center">
-        {/* Logo */}
-        <div className="flex items-center gap-2 mb-6 text-indigo-600 text-2xl font-semibold">
-          <MessageSquareQuote className="w-8 h-8" />
-          <span>Chat App</span>
-        </div>
 
-        {/* Sign Up Form */}
-        <div className="w-full max-w-md bg-white p-8 rounded-2xl shadow-lg border">
-          <h2 className="text-2xl font-semibold text-gray-800 mb-4 text-center">Create Account</h2>
+    // <div className="min-h-screen w-full flex flex-col md:flex-row bg-gray-50">
+    //   {/* Left Side (Form) */}
+    //   <div className="min-h-screen w-full md:w-1/2  md:pt-0 pt-20  flex flex-col items-center justify-center">
+    //     {/* Logo */}
+    //     <div className="flex items-center gap-2 mb-6 text-indigo-600 text-2xl font-semibold">
+    //       <MessageSquareQuote className="w-8 h-8" />
+    //       <span>Chat App</span>
+    //     </div>
+    //     {/* Sign Up Form */}
+    //     <div className="w-full max-w-md bg-white p-8 rounded-2xl shadow-lg border">
+    //       <h2 className="text-2xl font-semibold text-gray-800 mb-4 text-center">Create Account</h2>
+    //       <form onSubmit={handleSubmit} className="flex flex-col gap-4">
+    //         {/* Name */}
+    //         <div className="flex items-center gap-2 border rounded-lg px-3 py-2">
+    //           <User className="w-5 h-5 text-gray-500" />
+    //           <input
+    //             type="text"
+    //             className="w-full outline-none text-gray-700"
+    //             placeholder="Full Name"
+    //             value={formData.fullName}
+    //             onChange={(e)=>setFormData({...formData, fullName:e.target.value})}
+    //           />
+    //         </div>
+    //         {/* Email */}
+    //         <div className="flex items-center gap-2 border rounded-lg px-3 py-2">
+    //           <MailIcon className="w-5 h-5 text-gray-500" />
+    //           <input
+    //             type="email"
+    //             className="w-full outline-none text-gray-700"
+    //             placeholder="Email Address"
+    //             value={formData.email}
+    //             onChange={(e)=> setFormData({...formData, email:e.target.value})}
+    //           />
+    //         </div>
+    //         {/* Password */}
+    //         <div className="flex items-center gap-2 border rounded-lg px-3 py-2">
+    //           <Lock className="w-5 h-5 text-gray-500" />
+    //           <input
+    //             type={showPassword?"text":"password"}
+    //             className="w-full outline-none text-gray-700"
+    //             placeholder="password"
+    //             value={formData.password}
+    //             onChange={(e)=>setFormData({...formData, password:e.target.value})}
+    //           />
+    //           <button 
+    //             type='button'
+    //             className='flex items-center'
+    //             onClick={()=>setShowPassword(!showPassword)}
+    //           >
+    //             {showPassword? 
+    //             (<EyeOff className="w-5 h-5 text-gray-700"/>) : 
+    //             (<Eye className="w-5 h-5 text-gray-700"/>)}
+    //           </button>
+    //         </div>
+    //         {/* Button */}
+    //         <button type="submit"
+    //           className="text-center w-full bg-indigo-600 text-white py-2 rounded-lg font-medium hover:bg-indigo-700 transition"
+    //           disabled={isSigningUp}
+    //         >{isSigningUp?
+    //         (
+    //           <div className="flex justify-center items-center gap-2">
+    //             <Loader2 className="w-5 h-5 animate-spin" />
+    //             <span>Loading...</span>
+    //           </div>
+    //           )
+    //           :("CreateAccount")}</button>
+    //       </form>
+    //       {/* Alread have account */}
+    //       <div className='text-center mt-5'>
+    //           <p className='text-base text-gray-700'>
+    //             Already have an account?{" "}
+    //             <Link to="/login" className="text-indigo-800">
+    //             Sign in 
+    //             </Link>
+    //           </p>
+    //       </div>
+    //     </div>
+    //   </div>
+    //   {/* Right Side Image */}
+    //   {/* <AuthImagePattern
+    //     title="Join our community"
+    //     subtitle="Talk with friends, share moments, ans stay Connected"
+    //   /> */}
+    //   <div className="hidden md:flex w-1/2 items-center justify-center bg-indigo-200">
+    //     {/* <p className='text-2xl justify-center items-center'>Join Our community</p> */}
+    //     <img
+    //       src="https://images.unsplash.com/photo-1521791136064-7986c2920216?auto=format&fit=crop&w=800&q=80"
+    //       alt="signup"
+    //       className="w-full h-full object-cover"
+    //     />
+    //   </div>
+    // </div>
 
-          <form onSubmit={handleSubmit} className="flex flex-col gap-4">
-            {/* Name */}
-            <div className="flex items-center gap-2 border rounded-lg px-3 py-2">
-              <User className="w-5 h-5 text-gray-500" />
-              <input
-                type="text"
-                className="w-full outline-none text-gray-700"
-                placeholder="Full Name"
-                value={formData.fullName}
-                onChange={(e)=>setFormData({...formData, fullName:e.target.value})}
-              />
-            </div>
-
-            {/* Email */}
-            <div className="flex items-center gap-2 border rounded-lg px-3 py-2">
-              <MailIcon className="w-5 h-5 text-gray-500" />
-              <input
-                type="email"
-                className="w-full outline-none text-gray-700"
-                placeholder="Email Address"
-                value={formData.email}
-                onChange={(e)=> setFormData({...formData, email:e.target.value})}
-              />
-            </div>
-
-            {/* Password */}
-            <div className="flex items-center gap-2 border rounded-lg px-3 py-2">
-              <Lock className="w-5 h-5 text-gray-500" />
-              <input
-                type={showPassword?"text":"password"}
-                className="w-full outline-none text-gray-700"
-                placeholder="password"
-                value={formData.password}
-                onChange={(e)=>setFormData({...formData, password:e.target.value})}
-              />
-              <button 
-                type='button'
-                className='flex items-center'
-                onClick={()=>setShowPassword(!showPassword)}
-              >
-                {showPassword? 
-                (<EyeOff className="w-5 h-5 text-gray-700"/>) : 
-                (<Eye className="w-5 h-5 text-gray-700"/>)}
-              </button>
-            </div>
-
-            {/* Button */}
-            <button type="submit"
-              className="text-center w-full bg-indigo-600 text-white py-2 rounded-lg font-medium hover:bg-indigo-700 transition"
-              disabled={isSigningUp}
-            >{isSigningUp?
-            (
-              <div className="flex justify-center items-center gap-2">
-                <Loader2 className="w-5 h-5 animate-spin" />
-                <span>Loading...</span>
-              </div>
-              )
-              :("CreateAccount")}</button>
-          </form>
-
-          {/* Alread have account */}
-          <div className='text-center mt-5'>
-              <p className='text-base text-gray-700'>
-                Already have an account?{" "}
-                <Link to="/login" className="text-indigo-800">
-                Sign in 
-                </Link>
-              </p>
-          </div>
-        </div>
-      </div>
-
-      {/* Right Side Image */}
-      {/* <AuthImagePattern
-        title="Join our community"
-        subtitle="Talk with friends, share moments, ans stay Connected"
-      /> */}
-      <div className="hidden md:flex w-1/2 items-center justify-center bg-indigo-200">
-        {/* <p className='text-2xl justify-center items-center'>Join Our community</p> */}
-        <img
-          src="https://images.unsplash.com/photo-1521791136064-7986c2920216?auto=format&fit=crop&w=800&q=80"
-          alt="signup"
-          className="w-full h-full object-cover"
-        />
-      </div>
-
+    <div className="flex flex-1 justify-center items-center pt-16 min-h-screen bg-primary">
+      <SignUp
+        signInUrl="/login"
+      />
     </div>
 
 
