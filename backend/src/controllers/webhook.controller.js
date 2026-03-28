@@ -1,5 +1,6 @@
 import { Webhook } from "svix";
 import User from "../models/user.model.js"; 
+import { getErrorResponse, getSuccessResponse } from "../lib/utils.js";
 
 export const clerkWebhook = async (req, res) => {
   const WEBHOOK_SECRET = process.env.CLERK_WEBHOOK_SECRET;
@@ -17,7 +18,7 @@ export const clerkWebhook = async (req, res) => {
   }
 
   const payload = req.body;
-  const body = JSON.stringify(payload);
+  const body = payload.toString();
 
   const webhook = new Webhook(WEBHOOK_SECRET);
 
@@ -31,8 +32,8 @@ export const clerkWebhook = async (req, res) => {
       "svix-signature": svix_signature,
     });
   } catch(err){
-    console.error("Error verifying webhook:", err);
-    return res.status(400).json({ error: "Error occurred" });
+    console.error("Error verifying webhook:", err.message);
+    return res.status(400).json(getErrorResponse({ error: "Error occurred" }));
   }
 
   const eventType = evt.type;
@@ -40,7 +41,7 @@ export const clerkWebhook = async (req, res) => {
     const { id, email_addresses, first_name, last_name, image_url } = evt.data;
     const email = email_addresses[0].email_address;
     if(!id || !email || (!first_name && !last_name)){
-      return res.status(500).json({message:"data is undefined"});
+      return res.status(500).json(getErrorResponse({message:"data is undefined"}));
     }
 
     try {
@@ -55,16 +56,16 @@ export const clerkWebhook = async (req, res) => {
 
       // console.log(`User created in DB: ${newUser.email}`);
       
-      return res.status(200).json({ message: "User created" });
+      return res.status(200).json(getSuccessResponse({ message: "User created" }));
     } catch (err) {
-      // console.log("Error saving user to DB:", err);
+      console.log("Error saving user to DB:", err);
       return res.status(500).json({ error: "Database error" });
     }
   }else if(eventType==="user.updated"){
     const { id, email_addresses, first_name, last_name, image_url } = evt.data;
     const email = email_addresses[0].email_address;
     if(!id || !email || (!first_name && !last_name)){
-      return res.status(500).json({message:"data is undefined"});
+      return res.status(500).json(getErrorResponse({message:"data is undefined"}));
     }
 
     try{
@@ -77,13 +78,13 @@ export const clerkWebhook = async (req, res) => {
         },
       );
       // console.log("update..");
-      return res.status(200).json({msg:"user updated"});
+      return res.status(200).json(getSuccessResponse({msg:"user updated"}));
     
     }catch(error){
-      // console.log("error in update profile : ", error);
-      return res.status(500).json({message:"Internal server error"});  
+      console.log("error in update profile : ", error);
+      return res.status(500).json(getErrorResponse({message:"Internal server error"}));  
     }
   }
 
-  return res.status(200).json({ message: "Event received" });
+  return res.status(200).json(getSuccessResponse({ message: "Event received" }));
 };
