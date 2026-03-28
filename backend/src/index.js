@@ -24,7 +24,7 @@ dotenv.config();
 const PORT = process.env.PORT;
 
 // --/api/webhooks/clerk => api for webhook
-app.use("/api/webhooks", express.json(), webhookRouter);
+app.use("/api/webhooks", express.raw({ type: "application/json" }), webhookRouter);
 
 app.use(cors({
   origin: process.env.NODE_ENV === "production" ? true : "http://localhost:5173",
